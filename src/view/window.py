@@ -3,13 +3,13 @@ from PyQt6 import QtGui, QtWidgets
 from PyQt6.QtCore import Qt, QPropertyAnimation, QPoint, QEasingCurve, QRectF, QTimer
 from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 from PyQt6.QtGui import QPainter, QPen
-
+import time
 
 CELL_SIZE = 20
 HALF_CELL_SIZE = 10
 
 class MainWindow(QMainWindow):
-    def __init__(self,matrix,colors):
+    def __init__(self,matrix,colors,points,points2,EveryDay,allFlyer):
         super().__init__()
         self.setWindowTitle("Random travel simulation")
         self.setGeometry(100, 100, 1000, 850)        
@@ -30,15 +30,22 @@ class MainWindow(QMainWindow):
         self.startBotton.clicked.connect(self.start)
         self.startBotton.setEnabled(False)
         self.rightLayout.addWidget(self.startBotton)
-
+        self.count = 0
         widget = QWidget()
         widget.setLayout(self.layout)
         self.setCentralWidget(widget)
         
         self.matrix = matrix
+        print(matrix)
+
         self.colors = colors
         self.ySize = len(matrix) + 1
         self.xSize = len(matrix[0]) + 1
+
+        self.points=points
+        self.points2=points2
+        self.EveryDay = EveryDay
+        self.allFlyer = allFlyer
 
         self.initialize()
         self.drawMatrix()
@@ -55,8 +62,16 @@ class MainWindow(QMainWindow):
         self.startBotton.setEnabled(True)
 
     def start(self):
-        self.drawLine(10,10,22,23)
- 
+        self.reflesh()
+        f = self.allFlyer[self.count]
+        self.count+=1
+        for name,origin,dest in f:
+            (x,y)=self.points2[self.points[origin]]
+            (a,b)=self.points2[self.points[dest]]
+            print(x,y,a,b)
+            self.drawLine(x,y,a,b)
+            
+            
     def initialize(self):
         canvas = QtGui.QPixmap(1000, 850)
         canvas.fill(Qt.GlobalColor.white)
@@ -82,8 +97,7 @@ class MainWindow(QMainWindow):
         for y in range(0,len(self.matrix)):
             for x in range(0,len(self.matrix)):
                 value = self.matrix[y][x]
-                if value > 0 :  
-                    print(value,y,x,end=" ---")   
+                if value > 0 :
                     pen.setWidth(CELL_SIZE)
                     
                     color = QtGui.QColor.fromHsv(int(self.colors[value-1]), 105, 255, 255)

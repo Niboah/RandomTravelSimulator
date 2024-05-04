@@ -5,6 +5,9 @@ import time
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import Qt, QPropertyAnimation, QPoint, QEasingCurve, QRectF
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget
+from src.model.CalculateCityBetween import calculateCityBetween
+from src.model.ReadCSV import DailyIteration
+
 import numpy as np
 import pandas as pd
 
@@ -28,20 +31,23 @@ def main():
 
     matrix = np.zeros((num_rows, num_cols), dtype=object)
     
-    negative_numbers = [-i for i in range(1, len(unique_cities) + 1)]
+    negative_numbers = {unique_cities[i-1]:-i for i in range(1, len(unique_cities) + 1)}
     #matrix = np.random.randint(0, len(unique_cities), size=(num_rows, num_cols))
     # Colocar números únicos en posiciones aleatorias en la matriz
     np.random.seed(42)  # Para reproducibilidad
-
-    points = []
+    
+    points = negative_numbers
+    points2 = {}
+    negative_numbers = negative_numbers.values()
 
     city_indices = np.random.choice(num_rows * num_cols, size=len(unique_cities), replace=False)
     for idx, num in zip(city_indices, negative_numbers):
         row = idx // num_cols  # Calcular la fila
         col = idx % num_cols   # Calcular la columna
         matrix[row, col] = num
-        points.append((row,col))
+        points2[num]=(col,row)
 
+    print (points2)
     vector=[(0,1),(1,0),(0,-1),(-1,0)]
     zeros=num_rows*num_cols-17
 
@@ -57,14 +63,24 @@ def main():
                     if(nx>=0 and nx <num_rows and ny>=0 and ny <num_cols and matrix[nx,ny]==0):
                         matrix[nx,ny]=i
                         zeros-=1
+
     
-    
+    cityCoodinates = dict()
+    unique_cities = list(unique_cities)
+    print("------------------------",unique_cities)
+    for i in range (1,len(unique_cities)+1):
+        cityCoodinates[unique_cities[i-1]] = (np.argwhere(matrix==-i)[0][0],np.argwhere(matrix==-i)[0][1])
+    print("------------------------3",cityCoodinates)
+    cityMiddle = calculateCityBetween(cityCoodinates, matrix)
+
+    [EveryDay,EveryDayPerson,allFlyer] = DailyIteration(cityMiddle)
+     
     ################################################################################
 
     colors = np.linspace(1, 359, len(unique_cities))
 
     app = QApplication(sys.argv)
-    window = MainWindow(matrix,colors)
+    window = MainWindow(matrix,colors,points,points2,EveryDay,allFlyer)
     window.show()
 
     sys.exit(app.exec())
