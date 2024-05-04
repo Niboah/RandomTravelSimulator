@@ -34,20 +34,23 @@ def dailyAction():
     exit()
 
 def compareDate(date1, date2):
-    mes1 = date1[2:3]
-    mes2 = date2[2:3]
-    dia1 = date1[0:1]
-    dia2 = date2[0:1]
+    mes1 = date1[2:4]
+
+    mes2 = date2[2:4]
+
+    dia1 = date1[0:2]
+
+    dia2 = date2[0:2]
+
     if mes1 == mes2 and dia1 == dia2:
         return 0
     elif mes1 > mes2 or (mes1 == mes2 or dia1 > dia2):
         return 1
     elif mes1 < mes2 or (mes1 == mes2 or dia1 < dia2):
         return -1
-
 def DailyIteration(cityMiddle):
     cityBetween = dict()
-    personFlying = {"" , "", ""}
+    personFlying = ["","",""]
     dailyFlyer = []
     allFlyer = []
     dailyFlyer = []
@@ -64,22 +67,48 @@ def DailyIteration(cityMiddle):
         for j in range(i):
             #print("2024" + str(idx+1) + str(j + 1))
             for index, row in df.iterrows():
-                comp = compareDate(row["Departure Date"].replace(" ", ""), str(j + 1) + str(idx+1) + "2024")
+                d = ""
+                if j+1 < 10:
+                    d+="0"
+                    d+=str(j+1)
+                else:
+                    d+=str(j+1)
+                if idx+1 <10:
+                    d+="0"
+                    d+=str(idx+1)
+                else:
+                    d+=str(idx+1)
+                comp = compareDate(row["Departure Date"].replace("/", ""), d+"2024")
+                #print(row["Departure Date"].replace("/", ""))
+                #print(d+"2024")
                 if(comp == 0):
                     print("Flying")
                     personFlying[0] = row["Traveller Name"]
                     personFlying[1] = row["Departure City"]
                     personFlying[2] = row["Arrival City"]
+                    dailyFlyer.append(copy.deepcopy(personFlying))
                     for it in cityMiddle[row["Departure City"]+row["Arrival City"]]:
                         cityDict[unique_cities[it-1]] += 1
                 elif(comp == 1):
                     print("Check return date")
-                    recomp = compareDate(row["Return Date"].replace(" ", ""), str(j + 1) + str(idx+1) + "2024")
+                    d = ""
+                    if j+1 < 10:
+                        d+="0"
+                        d+=str(j+1)
+                    else:
+                        d+=str(j+1)
+                    if idx+1 <10:
+                        d+="0"
+                        d+=str(idx+1)
+                    else:
+                        d+=str(idx+1)
+                    recomp = compareDate(row["Return Date"].replace("/", ""), d+"2024")
                     if(recomp == 0):
                         print("Flying Back")
                         personFlying[0] = row["Traveller Name"]
                         personFlying[1] = row["Arrival City"]
                         personFlying[2] = row["Departure City"]
+                        dailyFlyer.append(copy.deepcopy(personFlying))
                         for it in cityMiddle[row["Departure City"]+row["Arrival City"]]:
                             cityDict[unique_cities[it-1]] += 1
                     elif(recomp == -1):
@@ -94,8 +123,7 @@ def DailyIteration(cityMiddle):
                     print("Stay at original place")
                     cityDict[row["Departure City"]] = cityDict[row["Departure City"]] + 1
                     cityPersonDict[row["Departure City"]].add(row["Traveller Name"])
-                dailyFlyer.append(personFlying)
-                personFlying = {"","",""}
+                personFlying = ["","",""]
             EveryDay.append(copy.deepcopy(cityDict))
             EveryDayPerson.append(copy.deepcopy(cityPersonDict))
             allFlyer.append(copy.deepcopy(dailyFlyer))
@@ -104,6 +132,8 @@ def DailyIteration(cityMiddle):
                 cityDict[key] = 0
             for key in cityPersonDict:
                 cityPersonDict[key] = set()
+
+    print(allFlyer)
     return [EveryDay,EveryDayPerson,allFlyer]
         
     
