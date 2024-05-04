@@ -6,8 +6,9 @@ cityBetween = dict()
 personFlying = {"" , "", ""}
 dailyFlyer = []
 allFlyer = []
-file_path = 'src/model/hackupc-travelperk-dataset.csv'
-
+file_path = 'hackupc-travelperk-dataset.csv'
+unique_cities = ['Amsterdam', 'Barcelona', 'Berlin', 'Brussels', 'Budapest', 'Dublin', 'Florence', 
+                 'Lisbon', 'London', 'Madrid', 'Milan', 'Munich', 'Paris', 'Prague', 'Rome', 'Vienna', 'Zurich']
 # Read the CSV file into a DataFrame
 df = pd.read_csv(file_path)
 
@@ -47,9 +48,9 @@ def compareDate(date1, date2):
     elif mes1 < mes2 or (mes1 == mes2 or dia1 < dia2):
         return -1
 
-def DailyIteration():
+def DailyIteration(cityMiddle):
     # Replace 'your_file.csv' with the path to your CSV file
-    file_path = 'src/model/hackupc-travelperk-dataset.csv'
+    file_path = 'hackupc-travelperk-dataset.csv'
     # Read the CSV file into a DataFrame
     df = pd.read_csv(file_path)
     cityDict = {key: 0 for key in union_list}
@@ -66,6 +67,8 @@ def DailyIteration():
                     personFlying[0] = row["Traveller Name"]
                     personFlying[1] = row["Departure City"]
                     personFlying[2] = row["Arrival City"]
+                    for it in cityMiddle[row["Departure City"]+row["Arrival City"]]:
+                        cityDict[unique_cities[it-1]] += 1
                 elif(comp == 1):
                     print("Check return date")
                     recomp = compareDate(row["Return Date"].replace(" ", ""), str(j + 1) + str(idx+1) + "2024")
@@ -74,6 +77,8 @@ def DailyIteration():
                         personFlying[0] = row["Traveller Name"]
                         personFlying[1] = row["Arrival City"]
                         personFlying[2] = row["Departure City"]
+                        for it in cityMiddle[row["Departure City"]+row["Arrival City"]]:
+                            cityDict[unique_cities[it-1]] += 1
                     elif(recomp == -1):
                         print("Staying at foraign place")
                         cityDict[row["Arrival City"]] = cityDict[row["Arrival City"]] + 1
@@ -96,5 +101,6 @@ def DailyIteration():
                 cityDict[key] = 0
             for key in cityPersonDict:
                 cityPersonDict[key] = 0
+    return [EveryDay,EveryDayPerson,allFlyer]
         
     

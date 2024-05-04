@@ -1,5 +1,10 @@
 import numpy as np
 import random
+import pandas as pd
+from CalculateCityBetween import calculateCityBetween
+unique_cities = ['Amsterdam', 'Barcelona', 'Berlin', 'Brussels', 'Budapest', 'Dublin', 'Florence', 
+                 'Lisbon', 'London', 'Madrid', 'Milan', 'Munich', 'Paris', 'Prague', 'Rome', 'Vienna', 'Zurich']
+
 # Definir las dimensiones de la matriz y los números a asignar
 num_rows = 25
 num_cols = 25
@@ -55,3 +60,12 @@ while zeros>0:
                     city_matrix[nx,ny]=i
                     zeros-=1
 print (city_matrix)
+cityCoodinates = dict()
+for i in range (1,18):
+    cityCoodinates[unique_cities[i-1]] = (np.argwhere(city_matrix==-i)[0][0],np.argwhere(city_matrix==-i)[0][1])
+
+cityMiddle = calculateCityBetween(cityCoodinates, city_matrix)
+
+from ReadCSV import DailyIteration
+
+print(DailyIteration(cityMiddle))
