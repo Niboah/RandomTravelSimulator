@@ -51,7 +51,6 @@ def compareDate(date1, date2):
     elif mes1 < mes2 or (mes1 == mes2 or dia1 < dia2):
         return -1
 def DailyIteration(cityMiddle):
-    print("------------------------2",unique_cities)
     cityBetween = dict()
     personFlying = ["","",""]
     dailyFlyer = []
