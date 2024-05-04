@@ -41,7 +41,6 @@ for num in negative_numbers:
 print(city_matrix)
 vector=[(0,1),(1,0),(0,-1),(-1,0)]
 zeros=num_rows*num_cols-17
-ant=zeros
 while zeros>0:
     for i in range (1,18):
 
@@ -55,7 +54,4 @@ while zeros>0:
                 if(nx>=0 and nx <25 and ny>=0 and ny <25 and city_matrix[nx,ny]==0):
                     city_matrix[nx,ny]=i
                     zeros-=1
-    if ant==zeros:
-        break
-    ant=zeros
 print (city_matrix)
