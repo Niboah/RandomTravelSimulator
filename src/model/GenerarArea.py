@@ -1,53 +1,58 @@
-import random
 import numpy as np
-def generate_unique_coordinates(size):
-    coordinates = set()  # Use a set to store unique coordinates
-    while len(coordinates) < 17:
-        x = random.randint(0,size-1)
-        y = random.randint(0,size-1)
-        coordinates.add((x, y))
-    vector=[]
-    for x,y in coordinates:
-        vector.append((x,y))
-    return vector
+import random
+# Definir las dimensiones de la matriz y los números a asignar
+num_rows = 25
+num_cols = 25
+negative_numbers = [-i for i in range(1, 18)]  # Generar 17 números negativos
 
-def find_adjacent_position_with_zero(matrix, x, y):
-    for i in range(max(0, x - 1), min(x + 2, len(matrix))):
-        for j in range(max(0, y - 1), min(y + 2, len(matrix[0]))):
-            if (i, j) != (x, y) and matrix[i][j] == 0:
-                return (i, j)
-    return None
-def expansion(points):
-    matrix = [[0] * 25 for _ in range(25)]
-    i = 1
-    zeros = 25 * 25 - len(points)
-    zero_positions = [(x, y) for x in range(25) for y in range(25) if (x, y) not in points]
-    random.shuffle(zero_positions)
-
-    for x, y in points:
-        matrix[x][y] = i
-        i += 1
-
-    while zeros > 0:
-        p = random.randint(0, 16)
-        x, y = points[p]
-        np = find_adjacent_position_with_zero(matrix, x, y)
-        if np is not None:
-            nx, ny = np
-            points[p] = (nx, ny)
-            matrix[nx][ny] = p+1
-            zeros -= 1
-        elif zero_positions:
-            nx, ny = zero_positions.pop()
-            points[p] = (nx, ny)
-            matrix[nx][ny] = p+1
-            zeros -= 1
-        else:
-            break  # No more zero positions available
-
-    return matrix
+# Crear una matriz vacía de 4x5
+city_matrix = np.full((num_rows, num_cols), 0)
 
 
-points=generate_unique_coordinates(25)
-mat=expansion(points)
-print(mat)
+# Función para comprobar si la posición es válida
+def is_valid_position(matrix, row, col, distance):
+    row_start = max(0, row - distance)
+    row_end = min(num_rows, row + distance + 1)
+    col_start = max(0, col - distance)
+    col_end = min(num_cols, col + distance + 1)
+
+    # Revisar si alguna posición en el bloque está ocupada
+    for r in range(row_start, row_end):
+        for c in range(col_start, col_end):
+            if matrix[r, c] != 0:
+                return False
+    return True
+
+
+# Intentar colocar cada número respetando la distancia mínima de 3 bloques
+np.random.seed(2)
+
+for num in negative_numbers:
+    placed = False
+    attempts = 0
+    while not placed and attempts < 100:  # Limitar los intentos para evitar bucle infinito
+        row = np.random.randint(0, num_rows)
+        col = np.random.randint(0, num_cols)
+        if is_valid_position(city_matrix, row, col, 3):  # Usar distancia
+            city_matrix[row, col] = num
+            placed = True
+        attempts += 1
+
+print(city_matrix)
+vector=[(0,1),(1,0),(0,-1),(-1,0)]
+zeros=num_rows*num_cols-17
+ant=zeros
+while zeros>0:
+    for i in range (1,18):
+        coordenadas = np.argwhere(city_matrix==-i)
+        for x,y in coordenadas:
+            for xdir,ydir in vector:
+                nx=x+xdir
+                ny=y+ydir
+                if(nx>0 and nx <25 and ny>0 and ny <25 and city_matrix[nx,ny]==0):
+                    city_matrix[nx,ny]=-i
+                    zeros-=1
+    if ant==zeros:
+        break
+    ant=zeros
+print (city_matrix)
