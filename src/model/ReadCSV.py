@@ -2,10 +2,12 @@
 import pandas as pd
 import os
 import copy
-here = os.path.dirname(os.path.abspath(__file__))
-path = os.path.join(here, 'hackupc-travelperk-dataset.csv')
-unique_cities = ['Amsterdam', 'Barcelona', 'Berlin', 'Brussels', 'Budapest', 'Dublin', 'Florence', 
-                 'Lisbon', 'London', 'Madrid', 'Milan', 'Munich', 'Paris', 'Prague', 'Rome', 'Vienna', 'Zurich']
+
+from src.utils.read_file import getCities
+path = os.path.join(os.curdir, 'resource','hackupc-travelperk-dataset.csv')
+
+unique_cities = getCities()
+unique_cities = list(unique_cities)
 # Read the CSV file into a DataFrame
 df = pd.read_csv(path)
 
@@ -49,13 +51,12 @@ def compareDate(date1, date2):
     elif mes1 < mes2 or (mes1 == mes2 or dia1 < dia2):
         return -1
 def DailyIteration(cityMiddle):
+    print("------------------------2",unique_cities)
     cityBetween = dict()
     personFlying = ["","",""]
     dailyFlyer = []
     allFlyer = []
     dailyFlyer = []
-    # Replace 'your_file.csv' with the path to your CSV file
-    path = os.path.join(here, 'hackupc-travelperk-dataset.csv')
     # Read the CSV file into a DataFrame
     df = pd.read_csv(path)
     cityDict = {key: 0 for key in union_list}
@@ -82,15 +83,16 @@ def DailyIteration(cityMiddle):
                 #print(row["Departure Date"].replace("/", ""))
                 #print(d+"2024")
                 if(comp == 0):
-                    print("Flying")
+                    #print("Flying")
                     personFlying[0] = row["Traveller Name"]
                     personFlying[1] = row["Departure City"]
                     personFlying[2] = row["Arrival City"]
                     dailyFlyer.append(copy.deepcopy(personFlying))
+                    #print(cityMiddle)
                     for it in cityMiddle[row["Departure City"]+row["Arrival City"]]:
                         cityDict[unique_cities[it-1]] += 1
                 elif(comp == 1):
-                    print("Check return date")
+                    #print("Check return date")
                     d = ""
                     if j+1 < 10:
                         d+="0"
@@ -104,23 +106,24 @@ def DailyIteration(cityMiddle):
                         d+=str(idx+1)
                     recomp = compareDate(row["Return Date"].replace("/", ""), d+"2024")
                     if(recomp == 0):
-                        print("Flying Back")
+                        #print("Flying Back")
                         personFlying[0] = row["Traveller Name"]
                         personFlying[1] = row["Arrival City"]
                         personFlying[2] = row["Departure City"]
                         dailyFlyer.append(copy.deepcopy(personFlying))
+                        #print(cityMiddle)
                         for it in cityMiddle[row["Departure City"]+row["Arrival City"]]:
                             cityDict[unique_cities[it-1]] += 1
                     elif(recomp == -1):
-                        print("Staying at foraign place")
+                        #print("Staying at foraign place")
                         cityDict[row["Arrival City"]] = cityDict[row["Arrival City"]] + 1
                         cityPersonDict[row["Arrival City"]].add(row["Traveller Name"])
                     elif(recomp == 1):
-                        print("Already came back to my place")
+                        #print("Already came back to my place")
                         cityDict[row["Departure City"]] = cityDict[row["Departure City"]] + 1
                         cityPersonDict[row["Departure City"]].add(row["Traveller Name"])
                 elif(comp == -1):
-                    print("Stay at original place")
+                    #print("Stay at original place")
                     cityDict[row["Departure City"]] = cityDict[row["Departure City"]] + 1
                     cityPersonDict[row["Departure City"]].add(row["Traveller Name"])
                 personFlying = ["","",""]
@@ -133,7 +136,4 @@ def DailyIteration(cityMiddle):
             for key in cityPersonDict:
                 cityPersonDict[key] = set()
 
-    print(allFlyer)
     return [EveryDay,EveryDayPerson,allFlyer]
-        
-    
