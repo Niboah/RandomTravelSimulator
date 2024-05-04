@@ -1,16 +1,13 @@
 
 import pandas as pd
-
-cityBetween = dict()
-
-personFlying = {"" , "", ""}
-dailyFlyer = []
-allFlyer = []
-file_path = 'hackupc-travelperk-dataset.csv'
+import os
+import copy
+here = os.path.dirname(os.path.abspath(__file__))
+path = os.path.join(here, 'hackupc-travelperk-dataset.csv')
 unique_cities = ['Amsterdam', 'Barcelona', 'Berlin', 'Brussels', 'Budapest', 'Dublin', 'Florence', 
                  'Lisbon', 'London', 'Madrid', 'Milan', 'Munich', 'Paris', 'Prague', 'Rome', 'Vienna', 'Zurich']
 # Read the CSV file into a DataFrame
-df = pd.read_csv(file_path)
+df = pd.read_csv(path)
 
 # Extract the 'Category' column
 categories_column = df['Departure City']
@@ -49,12 +46,18 @@ def compareDate(date1, date2):
         return -1
 
 def DailyIteration(cityMiddle):
+    cityBetween = dict()
+    personFlying = {"" , "", ""}
+    dailyFlyer = []
+    allFlyer = []
+    dailyFlyer = []
     # Replace 'your_file.csv' with the path to your CSV file
-    file_path = 'hackupc-travelperk-dataset.csv'
+    path = os.path.join(here, 'hackupc-travelperk-dataset.csv')
     # Read the CSV file into a DataFrame
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(path)
     cityDict = {key: 0 for key in union_list}
-    cityPersonDict = {key: set() for key in union_list}
+    setlist = set()
+    cityPersonDict = {key: setlist for key in union_list}
     EveryDay = list()
     EveryDayPerson = list()
     for idx, i in enumerate(dias):
@@ -93,14 +96,14 @@ def DailyIteration(cityMiddle):
                     cityPersonDict[row["Departure City"]].add(row["Traveller Name"])
                 dailyFlyer.append(personFlying)
                 personFlying = {"","",""}
-            EveryDay.append(cityDict)
-            EveryDayPerson.append(cityPersonDict)
-            allFlyer.append(dailyFlyer)
+            EveryDay.append(copy.deepcopy(cityDict))
+            EveryDayPerson.append(copy.deepcopy(cityPersonDict))
+            allFlyer.append(copy.deepcopy(dailyFlyer))
             dailyFlyer=[]
             for key in cityDict:
                 cityDict[key] = 0
             for key in cityPersonDict:
-                cityPersonDict[key] = 0
+                cityPersonDict[key] = set()
     return [EveryDay,EveryDayPerson,allFlyer]
         
     
