@@ -3,6 +3,9 @@ import pandas as pd
 
 cityBetween = dict()
 
+personFlying = {"" , "", ""}
+dailyFlyer = []
+allFlyer = []
 file_path = 'src/model/hackupc-travelperk-dataset.csv'
 
 # Read the CSV file into a DataFrame
@@ -44,46 +47,54 @@ def compareDate(date1, date2):
     elif mes1 < mes2 or (mes1 == mes2 or dia1 < dia2):
         return -1
 
-
-# Replace 'your_file.csv' with the path to your CSV file
-file_path = 'src/model/hackupc-travelperk-dataset.csv'
-
-# Read the CSV file into a DataFrame
-df = pd.read_csv(file_path)
-cityDict = {key: 0 for key in union_list}
-cityPersonDict = {key: set() for key in union_list}
-EveryDay = list()
-EveryDayPerson = list()
-for idx, i in enumerate(dias):
-    for j in range(i):
-        #print("2024" + str(idx+1) + str(j + 1))
-        for index, row in df.iterrows():
-            comp = compareDate(row["Departure Date"].replace(" ", ""), str(j + 1) + str(idx+1) + "2024")
-            if(comp == 0):
-                print("Flying")
-                
-            elif(comp == 1):
-                print("Check return date")
-                recomp = compareDate(row["Return Date"].replace(" ", ""), str(j + 1) + str(idx+1) + "2024")
-                if(recomp == 0):
-                    print("Flying Back")
-                elif(recomp == -1):
-                    print("Staying at foraign place")
-                    cityDict[row["Arrival City"]] = cityDict[row["Arrival City"]] + 1
-                    cityPersonDict[row["Arrival City"]].add(row["Traveller Name"])
-                elif(recomp == 1):
-                    print("Already came back to my place")
+def DailyIteration():
+    # Replace 'your_file.csv' with the path to your CSV file
+    file_path = 'src/model/hackupc-travelperk-dataset.csv'
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(file_path)
+    cityDict = {key: 0 for key in union_list}
+    cityPersonDict = {key: set() for key in union_list}
+    EveryDay = list()
+    EveryDayPerson = list()
+    for idx, i in enumerate(dias):
+        for j in range(i):
+            #print("2024" + str(idx+1) + str(j + 1))
+            for index, row in df.iterrows():
+                comp = compareDate(row["Departure Date"].replace(" ", ""), str(j + 1) + str(idx+1) + "2024")
+                if(comp == 0):
+                    print("Flying")
+                    personFlying[0] = row["Traveller Name"]
+                    personFlying[1] = row["Departure City"]
+                    personFlying[2] = row["Arrival City"]
+                elif(comp == 1):
+                    print("Check return date")
+                    recomp = compareDate(row["Return Date"].replace(" ", ""), str(j + 1) + str(idx+1) + "2024")
+                    if(recomp == 0):
+                        print("Flying Back")
+                        personFlying[0] = row["Traveller Name"]
+                        personFlying[1] = row["Arrival City"]
+                        personFlying[2] = row["Departure City"]
+                    elif(recomp == -1):
+                        print("Staying at foraign place")
+                        cityDict[row["Arrival City"]] = cityDict[row["Arrival City"]] + 1
+                        cityPersonDict[row["Arrival City"]].add(row["Traveller Name"])
+                    elif(recomp == 1):
+                        print("Already came back to my place")
+                        cityDict[row["Departure City"]] = cityDict[row["Departure City"]] + 1
+                        cityPersonDict[row["Departure City"]].add(row["Traveller Name"])
+                elif(comp == -1):
+                    print("Stay at original place")
                     cityDict[row["Departure City"]] = cityDict[row["Departure City"]] + 1
                     cityPersonDict[row["Departure City"]].add(row["Traveller Name"])
-            elif(comp == -1):
-                print("Stay at original place")
-                cityDict[row["Departure City"]] = cityDict[row["Departure City"]] + 1
-                cityPersonDict[row["Departure City"]].add(row["Traveller Name"])
-        EveryDay.append(cityDict)
-        EveryDayPerson.append(cityPersonDict)
-        for key in cityDict:
-            cityDict[key] = 0
-        for key in cityPersonDict:
-            cityPersonDict[key] = 0
+                dailyFlyer.append(personFlying)
+                personFlying = {"","",""}
+            EveryDay.append(cityDict)
+            EveryDayPerson.append(cityPersonDict)
+            allFlyer.append(dailyFlyer)
+            dailyFlyer=[]
+            for key in cityDict:
+                cityDict[key] = 0
+            for key in cityPersonDict:
+                cityPersonDict[key] = 0
         
     

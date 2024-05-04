@@ -103,7 +103,7 @@ def TwoPointCity(pos1, pos2):
     unique_list = list(values_set)
     return unique_list
 
-def calculateCityBetween ():
+def calculateCityBetween(citymap,mapa):
     while bool(citymap):
         pos = next(iter(citymap.items()))
         citymap.pop(pos[0])
@@ -112,4 +112,4 @@ def calculateCityBetween ():
             citybetween[it+pos[0]] = citybetween[pos[0]+it]
     return citybetween
 
-print(calculateCityBetween())
+print(calculateCityBetween(citymap, mapa))
