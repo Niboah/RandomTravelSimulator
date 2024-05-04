@@ -26,11 +26,6 @@ unique_categories_arrival = categories_column.unique()
 # Convert lists to sets and take their union
 union_list = list(set(unique_categories_departure) | set(unique_categories_arrival))
 
-# Output the unique categories
-# for idx, category in enumerate(union_list):
-#     print(str(idx + 1)+ " " + category)
-
-# exit()
 dias = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 def dailyAction():
     exit()

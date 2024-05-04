@@ -1,10 +1,11 @@
-
-from ast import main
 from PyQt6 import QtGui, QtWidgets
 from PyQt6.QtCore import Qt, QPropertyAnimation, QPoint, QEasingCurve, QRectF, QTimer, QRect
 from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
-from PyQt6.QtGui import QPainter, QPen, QFont
-import time
+from PyQt6.QtGui import  QFont
+from src.model.config import configure
+
+import numpy as np
+
 
 CELL_SIZE = 20
 HALF_CELL_SIZE = 10
@@ -31,6 +32,11 @@ class MainWindow(QMainWindow):
         self.startBotton.clicked.connect(self.start)
         self.startBotton.setEnabled(False)
         self.rightLayout.addWidget(self.startBotton)
+
+        self.restartBotton =  QPushButton("Restart")
+        self.restartBotton.clicked.connect(self.restart)
+        self.restartBotton.setEnabled(True)
+        self.rightLayout.addWidget(self.restartBotton)
 
         self.days = QtWidgets.QLabel()
         self.rightLayout.addWidget(self.days)
@@ -72,6 +78,17 @@ class MainWindow(QMainWindow):
             anim = QPropertyAnimation(child, b"pos")
             self.listAni.append(anim)
 
+    def restart(self):
+        unique_cities, self.matrix, self.points,self.points2,self.EveryDay,self.allFlyer = configure()
+    
+        self.colors = np.linspace(1, 359, len(unique_cities))
+        self.reflesh()
+        for c in self.listChild:
+            c.setVisible(False)
+        self.startBotton.setText("Start")
+        self.days.setText("")
+        self.info.setText("")
+        self.count = 0
         
     def genMap(self):
         self.drawCell()
@@ -92,6 +109,7 @@ class MainWindow(QMainWindow):
             self.drawLine(x,y,a,b,self.listChild[childI],self.listAni[childI])
             childI+=1
         self.startBotton.setText("Next")
+        
             
             
     def initialize(self):
@@ -115,8 +133,7 @@ class MainWindow(QMainWindow):
         canvas = self.label.pixmap()
         painter = QtGui.QPainter(canvas)
         pen = QtGui.QPen()
-        
-
+    
         for y in range(0,len(self.matrix)):
             for x in range(0,len(self.matrix)):
                 value = self.matrix[y][x]
@@ -131,7 +148,6 @@ class MainWindow(QMainWindow):
 
                     pen.setColor(color)
                     painter.setPen(pen)
-                    
 
                     painter.drawPoint(((x+1)*CELL_SIZE)+HALF_CELL_SIZE, ((y+1)*CELL_SIZE)+HALF_CELL_SIZE)
 
@@ -147,15 +163,13 @@ class MainWindow(QMainWindow):
         self.label.setPixmap(canvas)
 
     def drawLine(self,iX,iY,dX,dY,c,anim):
+        c.setVisible(True)
         canvas = self.label.pixmap()
         painter = QtGui.QPainter(canvas)
         painter.drawLine(((iX+1)*CELL_SIZE)+HALF_CELL_SIZE, ((iY+1)*CELL_SIZE)+HALF_CELL_SIZE, ((dX+1)*CELL_SIZE)+HALF_CELL_SIZE, ((dY+1)*CELL_SIZE)+HALF_CELL_SIZE)
         painter.end()
         self.label.setPixmap(canvas)
 
-        
-        c.setVisible(True)
-        
         anim.setStartValue(QPoint(((iX+1)*CELL_SIZE)+HALF_CELL_SIZE,((iY+1)*CELL_SIZE)+HALF_CELL_SIZE))
         anim.setEndValue(QPoint(((dX+1)*CELL_SIZE)+HALF_CELL_SIZE, ((dY+1)*CELL_SIZE)+HALF_CELL_SIZE))
         anim.setDuration(1500)
@@ -187,6 +201,8 @@ class MainWindow(QMainWindow):
         self.drawCell()
         self.drawMatrix()
         self.writeInfo()
+        for c in self.listChild:
+            c.setVisible(False)
 
     def writeInfo(self):
         d = self.EveryDay[self.count]

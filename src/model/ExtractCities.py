@@ -1,7 +1,5 @@
 import numpy as np
 
-
-
 # Función para comprobar si la posición es válida
 def is_valid_position(matrix, row, col, distance,num_rows,num_cols):
     row_start = max(0, row - distance)
