@@ -1,26 +1,37 @@
 import numpy as np
 
-# Lista de ciudades única
-unique_cities = ['Amsterdam', 'Barcelona', 'Berlin', 'Brussels', 'Budapest', 'Dublin', 'Florence', 
-                 'Lisbon', 'London', 'Madrid', 'Milan', 'Munich', 'Paris', 'Prague', 'Rome', 'Vienna', 'Zurich']
+# Función para comprobar si la posición es válida
+def is_valid_position(matrix, row, col, distance,num_rows,num_cols):
+    row_start = max(0, row - distance)
+    row_end = min(num_rows, row + distance + 1)
+    col_start = max(0, col - distance)
+    col_end = min(num_cols, col + distance + 1)
+    
+    # Revisar si alguna posición en el bloque está ocupada
+    for r in range(row_start, row_end):
+        for c in range(col_start, col_end):
+            if matrix[r, c] != 0:
+                return False
+    return True
 
-# Definir las dimensiones de la matriz
-num_rows = 25
-num_cols = 25
+# Intentar colocar cada número respetando la distancia mínima de 3 bloques
+def genMatrix(num_rows,num_cols,numCities):
+    negative_numbers = [-i for i in range(1, numCities+1)]
+    city_matrix = np.full((num_rows, num_cols), 0)
 
-# Crear una matriz vacía de 4x5
-city_matrix = np.empty((num_rows, num_cols), dtype=object)
+    point2 = {}
 
-# Generar números enteros negativos para cada ciudad
-negative_numbers = [-i for i in range(1, len(unique_cities) + 1)]
+    for num in negative_numbers:
+        placed = False
+        attempts = 0
+        while not placed and attempts < 100:  # Limitar los intentos para evitar bucle infinito
+            row = np.random.randint(0, num_rows)
+            col = np.random.randint(0, num_cols)
+            if is_valid_position(city_matrix, row, col, 3,num_rows,num_cols):  # Usar distancia
+                city_matrix[row, col] = num
+                placed = True
+                point2[num]=(col,row)
+            attempts += 1
+            
 
-# Colocar números únicos en posiciones aleatorias en la matriz
-np.random.seed(42)  # Para reproducibilidad
-city_indices = np.random.choice(num_rows * num_cols, size=len(unique_cities), replace=False)
-for idx, num in zip(city_indices, negative_numbers):
-    row = idx // num_cols  # Calcular la fila
-    col = idx % num_cols   # Calcular la columna
-    city_matrix[row, col] = num
-
-# Posiciones que no fueron seleccionadas se quedan como None
-print(city_matrix)
+    return city_matrix, point2
