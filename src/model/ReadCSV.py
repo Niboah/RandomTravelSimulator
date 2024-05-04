@@ -29,7 +29,6 @@ union_list = list(set(unique_categories_departure) | set(unique_categories_arriv
 dias = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 def dailyAction():
     exit()
-
 def compareDate(date1, date2):
     mes1 = date1[2:4]
 
@@ -129,5 +128,4 @@ def DailyIteration(cityMiddle):
                 cityDict[key] = 0
             for key in cityPersonDict:
                 cityPersonDict[key] = set()
-
     return [EveryDay,EveryDayPerson,allFlyer]
