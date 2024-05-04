@@ -112,8 +112,4 @@ def calculateCityBetween ():
             citybetween[it+pos[0]] = citybetween[pos[0]+it]
     return citybetween
 
-
-    
-
-
 print(calculateCityBetween())
