@@ -128,11 +128,4 @@ def DailyIteration(cityMiddle):
                 cityDict[key] = 0
             for key in cityPersonDict:
                 cityPersonDict[key] = set()
-<<<<<<< Updated upstream
-
     return [EveryDay,EveryDayPerson,allFlyer]
-=======
-    return [EveryDay,EveryDayPerson,allFlyer]
-        
-    
->>>>>>> Stashed changes
