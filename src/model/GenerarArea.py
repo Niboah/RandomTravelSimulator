@@ -51,7 +51,7 @@ while zeros>0:
             for xdir,ydir in vector:
                 nx=x+xdir
                 ny=y+ydir
-                if(nx>=0 and nx <25 and ny>=0 and ny <25 and city_matrix[nx,ny]==0):
+                if(nx>=0 and nx <num_rows and ny>=0 and ny <num_cols and city_matrix[nx,ny]==0):
                     city_matrix[nx,ny]=i
                     zeros-=1
 print (city_matrix)
