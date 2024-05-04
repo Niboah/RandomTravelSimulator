@@ -44,13 +44,16 @@ zeros=num_rows*num_cols-17
 ant=zeros
 while zeros>0:
     for i in range (1,18):
+
         coordenadas = np.argwhere(city_matrix==-i)
+        coordenadas2 = np.argwhere(city_matrix==i)
+        coordenadas=np.concatenate((coordenadas,coordenadas2))
         for x,y in coordenadas:
             for xdir,ydir in vector:
                 nx=x+xdir
                 ny=y+ydir
-                if(nx>0 and nx <25 and ny>0 and ny <25 and city_matrix[nx,ny]==0):
-                    city_matrix[nx,ny]=-i
+                if(nx>=0 and nx <25 and ny>=0 and ny <25 and city_matrix[nx,ny]==0):
+                    city_matrix[nx,ny]=i
                     zeros-=1
     if ant==zeros:
         break
